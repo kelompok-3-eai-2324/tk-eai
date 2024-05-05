@@ -1,5 +1,6 @@
-flask
+Flask
 requests
 pyppeteer
 APScheduler
 asyncio
+psycopg2
