@@ -1,13 +1,12 @@
-import json
 from pyppeteer import launch, errors
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import time, os, psycopg2
+import time, os, psycopg2, pytz, json
 
 load_dotenv()
 
 def convert_relative_time_to_date(number, unit):
-    now = datetime.now()
+    now = datetime.now(pytz.timezone('Asia/Jakarta'))
     if unit.startswith("hour"):
         return (now - timedelta(hours=number)).strftime("%Y-%m-%d")
     elif unit.startswith("day"):
@@ -58,7 +57,6 @@ def insert_to_db(data):
         conn.commit()
     
 async def scrape():
-    f = open('out.log', 'w')
     start = time.time()
     browser = await launch(
         headless=True,
@@ -92,7 +90,7 @@ async def scrape():
                 load_more_btn = await load_more_div.querySelector('.k-btn-primary')
                 await load_more_btn.click()
             except (errors.TimeoutError, errors.ElementHandleError, AttributeError) as e:
-                print(e, file=f)
+                print(e)
                 all_loaded = True
 
         await page.waitForSelector(".k-w-36.k-text-center.k-btn-primary.k-bg-white.k-text-primary-color")
@@ -150,15 +148,14 @@ async def scrape():
                     sumber_situs=sumber_situs,
                     link_lowongan=link_lowongan
                 )
-                print(json.dumps(d, indent=2), file=f)
+                print(json.dumps(d, indent=2))
                 arr.append(d)
                 insert_to_db(d)
 
             except Exception as e:
-                print(e, file=f)
+                print(e)
                 pass
 
             await context.close()        
 
-    print('Scraping done in:',round(time.time() - start,2),'seconds', file=f)
-    f.close()
+    print('Scraping done in:',round(time.time() - start,2),'seconds')
