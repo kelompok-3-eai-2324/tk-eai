@@ -8,13 +8,13 @@ load_dotenv()
 def convert_relative_time_to_date(number, unit):
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     if unit.startswith("hour"):
-        return (now - timedelta(hours=number)).strftime("%Y-%m-%d")
+        return now - timedelta(hours=number)
     elif unit.startswith("day"):
-        return (now - timedelta(days=number)).strftime("%Y-%m-%d")
+        return now - timedelta(days=number)
     elif unit.startswith("month"):
-        return (now - timedelta(days=number*30)).strftime("%Y-%m-%d")
+        return now - timedelta(days=number*30)
     else:
-        return now.strftime("%Y-%m-%d")
+        return now
     
 def insert_to_db(data):
     DB_USER = os.getenv('DB_USER')
