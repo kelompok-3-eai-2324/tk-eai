@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request
-from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from scraper import main_scraper
 import requests, pytz
@@ -12,6 +11,6 @@ def index():
     return 'halo'
 
 if __name__ == '__main__':
-    scheduler.add_job(main_scraper.scrape, 'cron', hour=21)
+    scheduler.add_job(main_scraper.scrape, 'cron', hour=1)
     scheduler.start()
     app.run()
