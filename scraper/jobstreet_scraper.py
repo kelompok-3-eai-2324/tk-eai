@@ -60,12 +60,16 @@ async def scrape():
     start = time.time()
     browser = await launch(
         headless=True,
+        handleSIGINT=False,
+        handleSIGTERM=False,
+        handleSIGHUP=False,
         args= [
             "--no-sandbox",
             "--disable-gpu",
             "--disable-dev-shm-usage",
             "--start-maximized",
             ],
+            
     )
 
     urls = [
