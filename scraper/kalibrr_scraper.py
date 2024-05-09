@@ -1,7 +1,7 @@
 from pyppeteer import launch, errors
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import time, os, psycopg2, pytz, json
+import time, os, psycopg2, pytz
 
 load_dotenv()
 
@@ -99,7 +99,6 @@ async def scrape():
         await page.waitForSelector(".k-w-36.k-text-center.k-btn-primary.k-bg-white.k-text-primary-color")
         job_links = await page.querySelectorAll(".k-w-36.k-text-center.k-btn-primary.k-bg-white.k-text-primary-color")
         
-        arr = []
         for i, job_link in enumerate(job_links):
             try:
                 job_href = await job_link.getProperty('href')
@@ -151,8 +150,7 @@ async def scrape():
                     sumber_situs=sumber_situs,
                     link_lowongan=link_lowongan
                 )
-                print(json.dumps(d, indent=2))
-                arr.append(d)
+                print(d, flush=True)
                 insert_to_db(d)
 
             except Exception as e:

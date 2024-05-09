@@ -1,7 +1,7 @@
 from pyppeteer import launch, errors
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import time, os, psycopg2, asyncio, pytz, json
+import time, os, psycopg2, pytz
 
 load_dotenv()
 
@@ -126,7 +126,7 @@ async def scrape():
                         sumber_situs=sumber_situs,
                         link_lowongan=link_lowongan
                     )
-                    print(json.dumps(d, indent=2), flush=True)
+                    print(d, flush=True)
                     insert_to_db(d)
             except Exception as e:
                 print(e)
