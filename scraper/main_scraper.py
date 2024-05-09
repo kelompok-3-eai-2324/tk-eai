@@ -1,6 +1,7 @@
-import jobstreet_scraper, kalibrr_scraper, karir_scraper, linkedin_scraper, asyncio, os, psycopg2, pytz
+from . import jobstreet_scraper, kalibrr_scraper, karir_scraper, linkedin_scraper
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+import asyncio, os, psycopg2, pytz
 
 load_dotenv()
 
