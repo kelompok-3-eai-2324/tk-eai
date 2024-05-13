@@ -224,7 +224,7 @@ async def scroll_page(page):
 
 # Jalankan fungsi scrape secara asynchronous
 async def main():
-    urls_with_hrefs = await scrape("afiqilyasaakmal@icloud.com", "balkmlkb123")
+    urls_with_hrefs = await scrape("", "")
     # for url, hrefs in urls_with_hrefs.items():
     #     print("URL:", url)
     #     print("Hrefs:", hrefs)
