@@ -4,14 +4,13 @@ import os, psycopg2, pytz
 
 load_dotenv()
 
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
+
 def insert_to_db(data):
-    DB_USER = os.getenv('DB_USER')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-
-
     with psycopg2.connect(
         dbname=DB_NAME,
         user=DB_USER,
@@ -87,12 +86,6 @@ def insert_to_db(data):
 
 
 def filter_outdated_lowongan():
-    DB_USER = os.getenv('DB_USER')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-
     with psycopg2.connect(
         dbname=DB_NAME,
         user=DB_USER,
@@ -104,4 +97,53 @@ def filter_outdated_lowongan():
         with conn.cursor() as cur:
             two_months_ago = datetime.now(pytz.timezone('Asia/Jakarta')) - timedelta(days=60)
             cur.execute("DELETE FROM lowongan_table WHERE tanggal_publikasi < %s", (two_months_ago,))
-            conn.commit()
+
+        conn.commit()
+
+def get_all_lowongan():
+    with psycopg2.connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT
+        ) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM lowongan_table")
+            rows = cur.fetchall()   
+            return rows
+        
+def get_lowongan_by(
+        jenis_pekerjaan=None, 
+        tanggal_publikasi=None, 
+        lokasi=None, 
+        perusahaan=None
+        ):
+    
+    if not any([jenis_pekerjaan, tanggal_publikasi, lokasi, perusahaan]):
+        return get_all_lowongan()
+    
+    query = "SELECT * FROM lowongan_table WHERE "
+    if jenis_pekerjaan:
+        query += f"jenis_pekerjaan LIKE '%{jenis_pekerjaan}%' AND "
+    if tanggal_publikasi:
+        query += f"tanggal_publikasi='{tanggal_publikasi}' AND"
+    if lokasi:
+        query += f"lokasi ILIKE '%{lokasi}%' AND"
+    if perusahaan:
+        query += f"perusahaan ILIKE '%{perusahaan}%'"
+
+    query = query.rstrip(" AND")
+    query += ";"
+
+    with psycopg2.connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT
+        ) as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            rows = cur.fetchall()   
+            return rows
