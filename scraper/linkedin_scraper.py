@@ -6,11 +6,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import time, os, psycopg2, pytz
 import random
-
-load_dotenv()
-
-LINKEDIN_EMAIL=os.getenv('LINKEDIN_EMAIL')
-LINKEDIN_PASSWORD=os.getenv('LINKEDIN_PASSWORD')
+from utils.db import insert_to_db
 
 LINKEDIN_LOGIN_PAGE = 'https://linkedin.com/login'
 LINKEDIN_LOGIN_BUTTON = '.btn__primary--large.from__button--floating'
@@ -67,39 +63,35 @@ async def scrape(linkedInEmail, linkedInPassword):
 
     try: 
         await page.goto(LINKEDIN_LOGIN_PAGE)
-        await page.screenshot({'path' : 'loginpage.png', 'fullPage': True})
         await page.type('#username', linkedInEmail)
         await page.type('#password', linkedInPassword)
-        await page.screenshot({'path' : 'field filled.png', 'fullPage': True})
         await page.click('button[data-litms-control-urn="login-submit"]')
         await page.waitForNavigation()
         print("Logged in to LinkedIn")
-        await page.screenshot({'path' : 'loggedin.png', 'fullPage': True})
     except (errors.TimeoutError, errors.ElementHandleError, AttributeError) as e:
         print(f"Login failed: {e}")
         await browser.close()
 
-    urls = [
-        'https://www.linkedin.com/jobs/search/?keywords=programmer&location=Indonesia',
-        'https://www.linkedin.com/jobs/search/?keywords=data&location=Indonesia',
-        'https://www.linkedin.com/jobs/search/?keywords=network&location=Indonesia',
-        'https://www.linkedin.com/jobs/search/?keywords=cyber%20security&location=Indonesia',
-    ]
+    jenis_urls =  {
+        'programmer' : 'https://www.linkedin.com/jobs/search/?keywords=programmer&location=Indonesia',
+        'data' : 'https://www.linkedin.com/jobs/search/?keywords=data&location=Indonesia',
+        'network' : 'https://www.linkedin.com/jobs/search/?keywords=network&location=Indonesia',
+        'cyber security' : 'https://www.linkedin.com/jobs/search/?keywords=cyber%20security&location=Indonesia',
+    }
     
     job_ids = []
 
-    for url in urls:
+    for jenis in jenis_urls:
+        i=0;
         current_page = 1
         all_loaded = False
         
-        print(f'Currently scraping for this URL: {url}')
+        print(f'Currently scraping for this URL: {jenis_urls[jenis]}')
         
-        await page.goto(url)
+        await page.goto(jenis_urls[jenis])
         
         await page.waitFor(3000)
         print("Page has been finished rendering")
-        
-        await page.screenshot({'path' : 'captcha.png', 'fullPage': True})
         
         
         await page.waitForSelector('.artdeco-pagination__indicator--number:last-child')
@@ -203,15 +195,18 @@ async def scrape(linkedInEmail, linkedInPassword):
                         print(link_lowongan)
                         
                         d = dict(
+                        no=i,
                         judul_lowongan=judul_lowongan,
                         tanggal_publikasi=tanggal_publikasi,
                         lokasi_pekerjaan=lokasi_pekerjaan,
                         perusahaan=perusahaan,
                         sumber_situs=sumber_situs,
-                        link_lowongan=link_lowongan
+                        link_lowongan=link_lowongan,
+                        jenis_pekerjaan=jenis,
                         )
                         
                         print(d, flush=True)
+                        insert_to_db(d)
                         
                         await page_job.close()
                         await page.waitFor(1000)

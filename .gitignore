@@ -1,4 +1,7 @@
 out.log
+log.txt
+run.sh
+stop.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

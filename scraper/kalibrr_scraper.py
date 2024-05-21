@@ -1,61 +1,8 @@
 from pyppeteer import launch, errors
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import time, os, psycopg2, pytz
+from utils.db import insert_to_db
+from utils.date import convert_relative_time_to_date
+import time
 
-load_dotenv()
-
-def convert_relative_time_to_date(number, unit):
-    now = datetime.now(pytz.timezone('Asia/Jakarta'))
-    if unit.startswith("hour"):
-        return now - timedelta(hours=number)
-    elif unit.startswith("day"):
-        return now - timedelta(days=number)
-    elif unit.startswith("month"):
-        return now - timedelta(days=number*30)
-    else:
-        return now
-    
-def insert_to_db(data):
-    DB_USER = os.getenv('DB_USER')
-    DB_PASSWORD = os.getenv('DB_PASSWORD')
-    DB_HOST = os.getenv('DB_HOST')
-    DB_PORT = os.getenv('DB_PORT')
-    DB_NAME = os.getenv('DB_NAME')
-
-    with psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-        ) as conn:
-
-        with conn.cursor() as cur:
-            cur.execute("""
-                        SELECT tanggal_publikasi FROM lowongan_table WHERE perusahaan = %s AND judul_lowongan = %s;
-                        """, (data["perusahaan"], data["judul_lowongan"]))
-            existing_row = cur.fetchone()
-
-            if existing_row:
-                existing_tanggal_publikasi = existing_row[0]
-                if existing_tanggal_publikasi < data["tanggal_publikasi"]:
-                    cur.execute("""
-                                DELETE FROM lowongan_table WHERE perusahaan = %s AND judul_lowongan = %s;
-                                """, (data["perusahaan"], data["judul_lowongan"]))
-
-                    cur.execute("""
-                                INSERT INTO lowongan_table (judul_lowongan, tanggal_publikasi, lokasi_pekerjaan, perusahaan, sumber_situs, link_lowongan)
-                                VALUES (%s, %s, %s, %s, %s, %s);
-                                """, (data["judul_lowongan"], data["tanggal_publikasi"], data["lokasi_pekerjaan"], data["perusahaan"], data["sumber_situs"], data["link_lowongan"]))
-            else:
-                cur.execute("""
-                            INSERT INTO lowongan_table (judul_lowongan, tanggal_publikasi, lokasi_pekerjaan, perusahaan, sumber_situs, link_lowongan)
-                            VALUES (%s, %s, %s, %s, %s, %s);
-                            """, (data["judul_lowongan"], data["tanggal_publikasi"], data["lokasi_pekerjaan"], data["perusahaan"], data["sumber_situs"], data["link_lowongan"]))
-
-        conn.commit()
-    
 async def scrape():
     start = time.time()
     browser = await launch(
@@ -71,18 +18,18 @@ async def scrape():
             ],
     )
 
-    urls = [
-        'https://www.kalibrr.com/id-ID/home/te/programmer/co/Indonesia?sort=Freshness',
-        'https://www.kalibrr.com/id-ID/home/te/data/co/Indonesia?sort=Freshness',
-        'https://www.kalibrr.com/id-ID/home/te/network/co/Indonesia?sort=Freshness',
-        'https://www.kalibrr.com/id-ID/home/te/cyber-security/co/Indonesia?sort=Freshness',
-    ]
+    jenis_urls = {
+        'programmer' : 'https://www.kalibrr.com/id-ID/home/te/programmer/co/Indonesia?sort=Freshness',
+        'data' : 'https://www.kalibrr.com/id-ID/home/te/data/co/Indonesia?sort=Freshness',
+        'network': 'https://www.kalibrr.com/id-ID/home/te/network/co/Indonesia?sort=Freshness',
+        'cyber security' : 'https://www.kalibrr.com/id-ID/home/te/cyber-security/co/Indonesia?sort=Freshness',
+    }
 
-    for url in urls:
+    for jenis in jenis_urls:
         context = await browser.createIncognitoBrowserContext()
         page = await context.newPage()
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36')
-        await page.goto(url)
+        await page.goto(jenis_urls[jenis])
 
         all_loaded = False
         i = 0
@@ -148,13 +95,14 @@ async def scrape():
                     lokasi_pekerjaan=lokasi_pekerjaan,
                     perusahaan=perusahaan,
                     sumber_situs=sumber_situs,
-                    link_lowongan=link_lowongan
+                    link_lowongan=link_lowongan,
+                    jenis_pekerjaan=jenis,
                 )
                 print(d, flush=True)
                 insert_to_db(d)
 
             except Exception as e:
-                print(e)
+                print('Error:',e)
                 pass
 
             await context.close()        
