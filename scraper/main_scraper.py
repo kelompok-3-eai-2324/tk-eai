@@ -5,6 +5,9 @@ import asyncio, os, psycopg2, pytz
 
 load_dotenv()
 
+LINKEDIN_EMAIL=os.getenv('LINKEDIN_EMAIL')
+LINKEDIN_PASSWORD=os.getenv('LINKEDIN_PASSWORD')
+
 def filter_outdated_lowongan():
     DB_USER = os.getenv('DB_USER')
     DB_PASSWORD = os.getenv('DB_PASSWORD')
@@ -31,3 +34,4 @@ def scrape():
     filter_outdated_lowongan()
     asyncio.run(kalibrr_scraper.scrape())
     asyncio.run(jobstreet_scraper.scrape())
+    asyncio.run(linkedin_scraper.linkedin_scrape(LINKEDIN_EMAIL, LINKEDIN_PASSWORD))
