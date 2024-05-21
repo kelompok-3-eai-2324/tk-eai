@@ -177,8 +177,7 @@ async def scrape(linkedInEmail, linkedInPassword):
                         
                         sumber_situs = "linkedin.com"
                         
-                        button_apply = '.jobs-apply-button--top-card'
-                        
+                        button_apply = '.jobs-apply-button.artdeco-button.artdeco-button--3.artdeco-button--primary.ember-view'
                         link_lowongan = None
 
                         is_external_link = await page_job.evaluate('(element) => element.querySelector("span").textContent.trim()', button_apply)
