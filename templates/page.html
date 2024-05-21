@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Scraper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .background-effects::before,
+        .background-effects::after {
+            content: '';
+            position: absolute;
+            filter: blur(8rem);
+            opacity: 0.5;
+        }
+
+        .background-effects::before {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 300px;
+            max-width: 480px;
+            background: radial-gradient(circle, white, transparent);
+        }
+
+        .background-effects::after {
+            bottom: 0;
+            left: 33%;
+            width: 100%;
+            height: 180px;
+            max-width: 240px;
+            background: conic-gradient(from skyblue, blue);
+        }
+
+        .card {
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: #1a202c;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+        }
+
+        .card:hover {
+            opacity: 0.9;
+        }
+
+        .hero-section {
+            background-image: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .hero-section button {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .hero-section button:hover {
+            background-color: #45a049;
+        }
+
+        @keyframes fadeInRightToLeft {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in-right-to-left {
+            animation: fadeInRightToLeft 1.5s ease-out;
+        }
+
+        @keyframes fadeInLeftToRight {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in-left-to-right {
+            animation: fadeInLeftToRight 1.5s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white overflow-x-hidden">
+    <nav class="bg-gradient-to-r from-purple-500 to-red-500 text-white p-2">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="https://github.com/kelompok-3-eai-2324/tk-eai" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
+                    alt="GitHub Logo" class="h-8">
+            </a>
+            <div>
+                <a class="text-white">EAI Project 2024s</a>
+            </div>
+        </div>
+    </nav>
+
+    <div
+        class="relative flex flex-col items-center justify-center h-screen text-center bg-gradient-to-b from-black via-gray-900 to-black">
+        <h1 class="text-4xl md:text-6xl lg:text-8xl font-bold text-white fade-in-right-to-left">Job Scraper</h1>
+        <button onclick="scrollToCards()"
+            class="mt-5 px-6 py-3 text-lg bg-blue-600 rounded hover:bg-blue-700 transition-colors fade-in-left-to-right">Get
+            Started</button>
+        <div class="background-effects absolute inset-0 z-[-1]"></div>
+    </div>
+
+    
+    <div class="h-24 mb-8 mt-8 flex flex-col items-center justify-center">
+        <div class="text-center mb-4">
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold text-white fade-in">Scrape from</h2>
+        </div>
+        <div class="grid grid-cols-4 gap-4">
+            <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
+                <div class="text-center mr-2">
+                    <img src="{{ url_for('static', filename='LinkedIn_logo.svg') }}" alt="Linkedin Logo" class="h-24 w-24 mx-auto">
+                </div>
+                <p class="text-sm text-white">LinkedIn</p>
+            </div>
+            <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
+                <div class="text-center mr-2">
+                    <img src="{{ url_for('static', filename='Karir_com.webp') }}" alt="Karir Logo" class="h-24 w-24 mx-auto">
+                </div>
+                <p class="text-sm text-white">Karir</p>
+            </div>
+            <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
+                <div class="text-center mr-2">
+                    <img src="{{ url_for('static', filename='logo-jobstreet-by-seek-l-min.jpg') }}" alt="JobStreet Logo" class="h-24 w-24 mx-auto">
+                </div>
+                <p class="text-sm text-white">JobStreet</p>
+            </div>
+            <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
+                <div class="text-center mr-2">
+                    <img src="{{ url_for('static', filename='Kalibrr_Logo.png') }}" alt="Kalibrr Logo" class="h-24 w-24 mx-auto">
+                </div>
+                <p class="text-sm text-white">Kalibrr</p>
+            </div>
+        </div>
+    </div>    
+      
+
+    <div class="h-24 mb-12 flex flex-col items-center justify-center">
+        
+    </div>
+    <h2 class="text-center text-2xl md:text-3xl text-white">List Pekerjaan</h2>
+    <div id="cards-section" class="w-full max-w-6xl mx-auto py-5 flex flex-wrap gap-5 justify-center overflow-y-auto">
+        <div
+            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
+            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
+                <i class="fa-solid fa-up-right-from-square"></i>
+            </a>
+            <h2 class="text-xl font-semibold text-white">Frontend Developer</h2>
+            <p class="text-gray-300">Posted on: May 15, 2024</p>
+            <p class="text-gray-300">Location: Jakarta, Indonesia</p>
+            <p class="text-gray-300">Company: Tech Company</p>
+            <p><a href="https://karir.com" target="_blank" class="text-blue-500 hover:underline">karir.com</a></p>
+        </div>
+        <div
+            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
+            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
+                <i class="fa-solid fa-up-right-from-square"></i>
+            </a>
+            <h2 class="text-xl font-semibold text-white">Backend Developer</h2>
+            <p class="text-gray-300">Posted on: May 16, 2024</p>
+            <p class="text-gray-300">Location: Bandung, Indonesia</p>
+            <p class="text-gray-300">Company: Another Tech Company</p>
+            <p><a href="https://jobstreet.co.id" target="_blank"
+                    class="text-blue-500 hover:underline">jobstreet.co.id</a></p>
+        </div>
+        <div
+            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
+            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
+                <i class="fa-solid fa-up-right-from-square"></i>
+            </a>
+            <h2 class="text-xl font-semibold text-white">UI/UX Designer</h2>
+            <p class="text-gray-300">Posted on: May 17, 2024</p>
+            <p class="text-gray-300">Location: Surabaya, Indonesia</p>
+            <p class="text-gray-300">Company: Design Company</p>
+            <p><a href="https://kalibrr.com" target="_blank" class="text-blue-500 hover:underline">kalibrr.com</a>
+            </p>
+        </div>
+        <div
+            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
+            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
+                <i class="fa-solid fa-up-right-from-square"></i>
+            </a>
+            <h2 class="text-xl font-semibold text-white">Data Scientist</h2>
+            <p class="text-gray-300">Posted on: May 18, 2024</p>
+            <p class="text-gray-300">Location: Yogyakarta, Indonesia</p>
+            <p class="text-gray-300">Company: Data Company</p>
+            <p><a href="https://linkedin.com" target="_blank" class="text-blue-500 hover:underline">linkedin.com</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function scrollToCards() {
+            document.getElementById('cards-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('cards-section').addEventListener('scroll', function () {
+            if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
+                addMoreCards();
+            }
+        });
+
+        function addMoreCards() {
+            const cardsSection = document.getElementById('cards-section');
+            for (let i = 0; i < 4; i++) {
+                const card = document.createElement('div');
+                card.className = 'relative border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)] card';
+                card.innerHTML = `
+                    <h2 class="text-xl font-semibold text-white">Job Title ${i + 1}</h2>
+                    <p class="text-gray-300">Posted on: Date</p>
+                    <p class="text-gray-300">Location: City, Country</p>
+                    <p class="text-gray-300">Company: Company Name</p>
+                    <p class="text-blue-500 hover:underline"><a href="#" target="_blank">Source</a></p>
+                    <p class="text-blue-500 hover:underline"><a href="#" target="_blank">View Job</a></p>
+                `;
+                cardsSection.appendChild(card);
+            }
+        }
+    </script>
+</body>
+
+</html>
