@@ -128,11 +128,11 @@ def get_lowongan_by(
     if jenis_pekerjaan:
         query += f"jenis_pekerjaan LIKE '%{jenis_pekerjaan}%' AND "
     if dari_tanggal:
-        query += f"tanggal_publikasi >='{dari_tanggal}' AND"
+        query += f"tanggal_publikasi::date >='{dari_tanggal}' AND "
     if sampai_tanggal:
-        query += f"tanggal_publikasi <='{sampai_tanggal}' AND"
+        query += f"tanggal_publikasi::date <='{sampai_tanggal}' AND "
     if lokasi:
-        query += f"lokasi ILIKE '%{lokasi}%' AND"
+        query += f"lokasi ILIKE '%{lokasi}%' AND "
     if perusahaan:
         query += f"perusahaan ILIKE '%{perusahaan}%'"
 

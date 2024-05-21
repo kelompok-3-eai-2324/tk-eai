@@ -1,7 +1,7 @@
 from pyppeteer import launch, errors
 from utils.db import insert_to_db
 from utils.date import convert_relative_time_to_date
-import time
+import time, traceback
 
 async def scrape():
     start = time.time()
@@ -102,7 +102,8 @@ async def scrape():
                 insert_to_db(d)
 
             except Exception as e:
-                print('Error:',e)
+                traceback.format_exc()
+                print(e)
                 pass
 
             await context.close()        
