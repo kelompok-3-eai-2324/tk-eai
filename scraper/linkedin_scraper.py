@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import time, os, psycopg2, pytz
 import random
-from utils.db import insert_to_db
+from ..utils.db import insert_to_db
 
 LINKEDIN_LOGIN_PAGE = 'https://linkedin.com/login'
 LINKEDIN_LOGIN_BUTTON = '.btn__primary--large.from__button--floating'
@@ -25,6 +25,10 @@ def convert_relative_time_to_date(number, unit):
         return now - timedelta(minutes=number)
     else:
         return now
+
+async def random_delay(min_delay, max_delay):
+    delay = random.uniform(min_delay, max_delay)
+    await asyncio.sleep(delay)
 
 async def scrape(linkedInEmail, linkedInPassword):
     print("Scraping job from LinkedIn ...")
@@ -48,7 +52,7 @@ async def scrape(linkedInEmail, linkedInPassword):
     selected_args = random.sample(possible_args, 3)
     
     browser = await launch(
-    headless=True,
+    headless=False,
     handleSIGINT=False,
     handleSIGTERM=False,
     handleSIGHUP=False,
@@ -90,26 +94,18 @@ async def scrape(linkedInEmail, linkedInPassword):
         
         await page.goto(jenis_urls[jenis])
         
-        await page.waitFor(3000)
-        print("Page has been finished rendering")
-        
-        
-        await page.waitForSelector('.artdeco-pagination__indicator--number:last-child')
-
-        # Mendapatkan elemen terakhir dari halaman
-        last_page_element = await page.querySelector('.artdeco-pagination__indicator--number:last-child')
-
-        # Mendapatkan teks dari elemen terakhir untuk mendapatkan nomor halaman terakhir
-        last_page_number = await page.evaluate('(element) => element.textContent', last_page_element)
-
-        print(f'Last page for this url is : {int(last_page_number)}')
+        await random_delay(5, 10)
         
         while not all_loaded:
             try:
-                await page.waitForSelector('.ember-view.jobs-search-results__list-item.occludable-update.p0.relative.scaffold-layout__list-item', timeout=10000)
+                await random_delay(5, 10)
+                print(f'Page-{jenis}-{current_page} has been finished rendering')
+                await page.waitForSelector('.ember-view.jobs-search-results__list-item.occludable-update.p0.relative.scaffold-layout__list-item')
                 job_elements = await page.querySelectorAll('.ember-view.jobs-search-results__list-item.occludable-update.p0.relative.scaffold-layout__list-item')
                 
                 print(f"Page {current_page} - Total links found: {len(job_elements)}")
+                
+                await random_delay(3, 5)
                 
                 for job_element in job_elements:
                     job_id = await page.evaluate('(element) => element.getAttribute("data-occludable-job-id")', job_element)
@@ -118,12 +114,11 @@ async def scrape(linkedInEmail, linkedInPassword):
                     else:
                         job_ids.append(job_id)
                         job_url = f'https://www.linkedin.com/jobs/view/{job_id}'
-                        print(job_url)
                     
                         page_job = await context.newPage()
                         await page_job.goto(job_url)
                     
-                        await page_job.waitFor(2500)
+                        await random_delay(5, 10)
                         
                         date_element = await page_job.querySelectorAll('span.tvm__text.tvm__text--low-emphasis, span.tvm__text.tvm__text--positive')
                         date_text = await page_job.evaluate('(element) => element.textContent', date_element[2])
@@ -176,20 +171,8 @@ async def scrape(linkedInEmail, linkedInPassword):
                         print(perusahaan)
                         
                         sumber_situs = "linkedin.com"
-                        
-                        button_apply = '.jobs-apply-button.artdeco-button.artdeco-button--3.artdeco-button--primary.ember-view'
-                        link_lowongan = None
 
-                        is_external_link = await page_job.evaluate('(element) => element.querySelector("span").textContent.trim()', button_apply)
-                        
-                        if is_external_link.startswith('Apply'):
-                            await page_job.click(button_apply)
-                            await page_job.waitFor(2500)
-                            await page.waitForSelector('.jobs-apply-button.artdeco-button.artdeco-button--icon-right.artdeco-button--3.artdeco-button--primary');
-                            await page_job.click('.jobs-apply-button.artdeco-button.artdeco-button--icon-right.artdeco-button--3.artdeco-button--primary')
-                            link_lowongan = page_job.url
-                        else:
-                            link_lowongan = page_job.url
+                        link_lowongan = page_job.url
                             
                         print(link_lowongan)
                         
@@ -203,23 +186,30 @@ async def scrape(linkedInEmail, linkedInPassword):
                         link_lowongan=link_lowongan,
                         jenis_pekerjaan=jenis,
                         )
+                        i += 1
                         
                         print(d, flush=True)
                         insert_to_db(d)
                         
                         await page_job.close()
-                        await page.waitFor(1000)
+                        await random_delay(3, 5)
 
                 current_page += 1
                 
-                if await page.querySelector(f'[aria-label="Page {current_page}"]'):
-                    page_button = await page.querySelector(f'[aria-label="Page {current_page}"]')
-                    await page_button.click()
-                    await page.waitFor(5000)
+                next_page_button = await page.querySelector('[aria-label="View next page"]')
+                if next_page_button:
+                    await next_page_button.click()
+                    await page.waitForNavigation()
+                    await random_delay(5, 10)
                 else:
-                    all_loaded=True
-                
-                all_loaded = True
+                    next_page_button = await page.querySelector(f'[aria-label="Page {current_page}"]')
+                    if next_page_button:
+                        await next_page_button.click()
+                        await page.waitForNavigation()
+                        await random_delay(5, 10)
+                    else:
+                        all_loaded = True
+
                 
             except (errors.TimeoutError, errors.ElementHandleError, AttributeError) as e:
                 print(f"Error on page {current_page}: {e}")
