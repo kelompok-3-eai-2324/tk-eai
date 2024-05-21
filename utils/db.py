@@ -33,7 +33,7 @@ def insert_to_db(data):
                 else:
                     data["jenis_pekerjaan"] = existing_jenis_pekerjaan + "," + data["jenis_pekerjaan"]
 
-                if existing_tanggal_publikasi < data["tanggal_publikasi"]:
+                if existing_tanggal_publikasi.replace(tzinfo=pytz.timezone('Asia/Jakarta')) < data["tanggal_publikasi"]:
                     cur.execute("""
                                 UPDATE lowongan_table
                                 SET judul_lowongan = %s, 
@@ -114,20 +114,23 @@ def get_all_lowongan():
             return rows
         
 def get_lowongan_by(
-        jenis_pekerjaan=None, 
-        tanggal_publikasi=None, 
-        lokasi=None, 
+        jenis_pekerjaan=None,
+        dari_tanggal=None,
+        sampai_tanggal=None,
+        lokasi=None,
         perusahaan=None
         ):
     
-    if not any([jenis_pekerjaan, tanggal_publikasi, lokasi, perusahaan]):
+    if not any([jenis_pekerjaan, dari_tanggal, sampai_tanggal, lokasi, perusahaan]):
         return get_all_lowongan()
     
     query = "SELECT * FROM lowongan_table WHERE "
     if jenis_pekerjaan:
         query += f"jenis_pekerjaan LIKE '%{jenis_pekerjaan}%' AND "
-    if tanggal_publikasi:
-        query += f"tanggal_publikasi='{tanggal_publikasi}' AND"
+    if dari_tanggal:
+        query += f"tanggal_publikasi >='{dari_tanggal}' AND"
+    if sampai_tanggal:
+        query += f"tanggal_publikasi <='{sampai_tanggal}' AND"
     if lokasi:
         query += f"lokasi ILIKE '%{lokasi}%' AND"
     if perusahaan:
