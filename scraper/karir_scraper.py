@@ -57,7 +57,7 @@ async def scrape():
     jenis_urls = {
         'programmer' : 'https://karir.com/search-lowongan?keyword=programmer',
         'data' : 'https://karir.com/search-lowongan?keyword=data',
-        'network': 'https://karir.com/search-lowongan?keyword=networks',
+        'network': 'https://karir.com/search-lowongan?keyword=network',
         'cyber security' : 'https://karir.com/search-lowongan?keyword=cyber%20security',
         
     }
@@ -97,12 +97,26 @@ async def scrape():
                     judul_lowongan_element = await page.querySelector('.MuiTypography-root.MuiTypography-body1.css-f6lc1t')
                     judul_lowongan = await page.evaluate('(element) => element.textContent', judul_lowongan_element)
                     
-                    print (judul_lowongan)
+                    # print (judul_lowongan)
                     
                     tanggal_publikasi_element = await page.querySelectorAll('.MuiTypography-root.MuiTypography-body1.css-1l6lhfq')
                     tanggal_publikasi = await page.evaluate('(element) => element.textContent', tanggal_publikasi_element[1])
+
+                    tanggal_publikasi = tanggal_publikasi.split(" ")
                     
-                    print (tanggal_publikasi)
+                    if tanggal_publikasi[2] == "bulan" and int(tanggal_publikasi[1]) > 2:
+                        continue
+                    else:
+                        if len(tanggal_publikasi) == 3:
+                            number = int(tanggal_publikasi[0])
+                            unit = tanggal_publikasi[1]
+                        else:
+                            number = int(tanggal_publikasi[1])
+                            unit = tanggal_publikasi[2]
+
+                    tanggal_publikasi = convert_relative_time_to_date(number, unit)
+                    
+                    # print (tanggal_publikasi)
                     
                     lokasi_pekerjaan = None
                     
@@ -112,7 +126,7 @@ async def scrape():
                     elif (len(lokasi_and_perusahaan_element) == 3):
                         lokasi_pekerjaan = await page.evaluate('(element) => element.textContent', lokasi_and_perusahaan_element[1])
                     
-                    print(lokasi_pekerjaan)
+                    # print(lokasi_pekerjaan)
                     
                     perusahaan = None
                     
@@ -123,7 +137,7 @@ async def scrape():
                         perusahaan_element = await page.querySelectorAll('.MuiTypography-root.MuiTypography-body1.css-6uefso')
                         perusahaan = await page.evaluate('(element) => element.textContent', lokasi_and_perusahaan_element[0])
                     
-                    print(perusahaan)
+                    # print(perusahaan)
                     
                     sumber_situs = "karir.com"
                     
