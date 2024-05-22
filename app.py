@@ -57,8 +57,6 @@ def more_jobs():
         perusahaan=perusahaan
     )
 
-    print(params)
-
     additional_jobs =requests.get('http://localhost:5001/api', params=params)
     return jsonify(additional_jobs.json())
 

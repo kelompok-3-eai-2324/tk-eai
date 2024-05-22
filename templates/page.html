@@ -228,13 +228,18 @@
         {% for job in jobs %}
         <div
             class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
-            <a href={{ job.link_lowongan }} target="_blank" class="absolute top-2 right-2 text-white">
+            <a href="{{ job.link_lowongan }}" class="absolute top-2 right-2 text-white">
                 <i class="fa-solid fa-up-right-from-square"></i>
             </a>
             <h2 class="text-xl font-semibold text-white">{{ job.judul_lowongan }}</h2>
             <p class="text-gray-300">Posted on: {{ job.tanggal_publikasi }}</p>
             <p class="text-gray-300">Location: {{ job.lokasi_pekerjaan }}</p>
             <p class="text-gray-300">Company: {{ job.perusahaan }}</p>
+            <p>
+                <a href="{{ job.link_lowongan }}" target="_blank" class="text-blue-500 hover:underline">
+                    Apply
+                </a>
+            </p>
             <p>
                 <a href="https:/{{ job.sumber_situs }}" target="_blank" class="text-blue-500 hover:underline">
                     {{ job.sumber_situs }}
@@ -298,6 +303,7 @@
                         const cardsSection = document.getElementById('cards-section');
                         data.forEach(job => {
                             const jobCard = document.createElement('div');
+                            jobCard.setAttribute('href', job.link_lowongan)
                             jobCard.className = "card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]";
                             jobCard.innerHTML = `
                                 <a href="${job.link_lowongan}" target="_blank" class="absolute top-2 right-2 text-white">
@@ -307,6 +313,11 @@
                                 <p class="text-gray-300">Posted on: ${job.tanggal_publikasi}</p>
                                 <p class="text-gray-300">Location: ${job.lokasi_pekerjaan}</p>
                                 <p class="text-gray-300">Company: ${job.perusahaan}</p>
+                                <p>
+                                    <a href="${job.link_lowongan}" target="_blank" class="text-blue-500 hover:underline">
+                                        Apply
+                                    </a>
+                                </p>
                                 <p>
                                     <a href="https://${job.sumber_situs}" target="_blank" class="text-blue-500 hover:underline">
                                         ${job.sumber_situs}
