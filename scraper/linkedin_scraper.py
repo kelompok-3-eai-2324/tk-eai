@@ -13,6 +13,7 @@ LINKEDIN_LOGIN_BUTTON = '.btn__primary--large.from__button--floating'
 
 def convert_relative_time_to_date(number, unit):
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
+    unit = unit.lower()
     if re.search(r'week[s]?', unit):
         return now - timedelta(weeks=number)
     elif re.search(r'day[s]?', unit):
@@ -33,31 +34,23 @@ async def random_delay(min_delay, max_delay):
 async def scrape(linkedInEmail, linkedInPassword):
     print("Scraping job from LinkedIn ...")
     
-    possible_args = [
-    "--no-sandbox",
-    "--disable-gpu",
-    "--disable-dev-shm-usage",
-    "--start-maximized",
-    "--ignore-certificate-errors",
-    "--disable-infobars",
-    "--disable-notifications",
-    "--disable-popup-blocking",
-    "--disable-background-networking",
-    "--disable-background-timer-throttling",
-    "--disable-backgrounding-occluded-windows",
-    ]
-    
-    random.shuffle(possible_args)
-    
-    selected_args = random.sample(possible_args, 3)
-    
     browser = await launch(
-    headless=False,
+    headless=True,
     handleSIGINT=False,
     handleSIGTERM=False,
     handleSIGHUP=False,
     args=[
-        *selected_args,
+        "--no-sandbox",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--start-maximized",
+        "--ignore-certificate-errors",
+        "--disable-infobars",
+        "--disable-notifications",
+        "--disable-popup-blocking",
+        "--disable-background-networking",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
     ],
 )
 
@@ -90,7 +83,7 @@ async def scrape(linkedInEmail, linkedInPassword):
         current_page = 1
         all_loaded = False
         
-        print(f'Currently scraping for this URL: {jenis_urls[jenis]}')
+        print(f'Currently scraping for this URL: {jenis}')
         
         await page.goto(jenis_urls[jenis])
         
