@@ -117,7 +117,6 @@ async def scrape(linkedInEmail, linkedInPassword):
                         date_text = await page_job.evaluate('(element) => element.textContent', date_element[2])
                         date_text = date_text.lower()
                         date_text = date_text.strip()
-                        # print(date_text)
                         
                         if "months" in date_text:
                             words = date_text.split()
@@ -129,8 +128,7 @@ async def scrape(linkedInEmail, linkedInPassword):
                         
                         judul_lowongan_element =  await page_job.querySelector('.t-24.job-details-jobs-unified-top-card__job-title')
                         h1_element = await judul_lowongan_element.querySelector('h1.t-24.t-bold.inline')
-                        judul_lowongan = await page_job.evaluate('(element) => element.textContent', h1_element)
-                        # print(judul_lowongan)     
+                        judul_lowongan = await page_job.evaluate('(element) => element.textContent', h1_element)    
                         tanggal_publikasi = None
                         
                         if date_text.startswith('reposted'):
@@ -143,13 +141,11 @@ async def scrape(linkedInEmail, linkedInPassword):
                             numb = int(date_text[0])
                             unit = date_text[1]
                             tanggal_publikasi = convert_relative_time_to_date(numb, unit)
-                        
-                        # print(tanggal_publikasi)
+                    
                         
                         location_element = await page_job.querySelectorAll('span.tvm__text')
                         lokasi_pekerjaan = await page_job.evaluate('(element) => element.textContent', location_element[0])
                         
-                        # print(lokasi_pekerjaan)
                         
                         perusahaan = None
                         
@@ -161,13 +157,11 @@ async def scrape(linkedInEmail, linkedInPassword):
                         else:
                             perusahaan = await page_job.evaluate('(element) => element.textContent.trim()', company_element)
                          
-                        # print(perusahaan)
                         
                         sumber_situs = "linkedin.com"
 
                         link_lowongan = page_job.url
                             
-                        # print(link_lowongan)
                         
                         d = dict(
                         no=i,
