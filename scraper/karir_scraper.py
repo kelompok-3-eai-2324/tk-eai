@@ -175,10 +175,3 @@ async def scrape():
                 all_loaded = True
     
     await browser.close()
-
-async def main():
-    start = time.time()
-    await scrape()
-    print(f'Scraping done in: {round(time.time() - start, 2)} seconds')
-
-asyncio.run(main())

@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final response =
-        await http.get(Uri.http('192.168.7.39:5001', '/api', queryParameters));
+        await http.get(Uri.http('34.67.253.129:5001', '/api', queryParameters));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
