@@ -55,10 +55,10 @@ async def scrape():
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36')
 
     jenis_urls = {
-        # 'programmer' : 'https://karir.com/search-lowongan?keyword=programmer',
+        'programmer' : 'https://karir.com/search-lowongan?keyword=programmer',
         'data' : 'https://karir.com/search-lowongan?keyword=data',
-        # 'network': 'https://karir.com/search-lowongan?keyword=networks',
-        # 'cyber security' : 'https://karir.com/search-lowongan?keyword=cyber%20security',
+        'network': 'https://karir.com/search-lowongan?keyword=networks',
+        'cyber security' : 'https://karir.com/search-lowongan?keyword=cyber%20security',
         
     }
     
@@ -99,6 +99,50 @@ async def scrape():
                     
                     print (judul_lowongan)
                     
+                    tanggal_publikasi_element = await page.querySelectorAll('.MuiTypography-root.MuiTypography-body1.css-1l6lhfq')
+                    tanggal_publikasi = await page.evaluate('(element) => element.textContent', tanggal_publikasi_element[1])
+                    
+                    print (tanggal_publikasi)
+                    
+                    lokasi_pekerjaan = None
+                    
+                    lokasi_and_perusahaan_element = await page.querySelectorAll('.MuiTypography-root.MuiTypography-body1.css-6uefso')
+                    if (len(lokasi_and_perusahaan_element) == 4):
+                        lokasi_pekerjaan = await page.evaluate('(element) => element.textContent', lokasi_and_perusahaan_element[2])
+                    elif (len(lokasi_and_perusahaan_element) == 3):
+                        lokasi_pekerjaan = await page.evaluate('(element) => element.textContent', lokasi_and_perusahaan_element[1])
+                    
+                    print(lokasi_pekerjaan)
+                    
+                    perusahaan = None
+                    
+                    perusahaan_element = await page.querySelector('.MuiTypography-root.MuiTypography-body1.css-wqnft9')
+                    if (perusahaan_element):
+                        perusahaan = await page.evaluate('(element) => element.textContent', perusahaan_element)
+                    else:
+                        perusahaan_element = await page.querySelectorAll('.MuiTypography-root.MuiTypography-body1.css-6uefso')
+                        perusahaan = await page.evaluate('(element) => element.textContent', lokasi_and_perusahaan_element[0])
+                    
+                    print(perusahaan)
+                    
+                    sumber_situs = "karir.com"
+                    
+                    link_lowongan = page.url
+                    
+                    d = dict(
+                        no=i,
+                        judul_lowongan=judul_lowongan,
+                        tanggal_publikasi=tanggal_publikasi,
+                        lokasi_pekerjaan=lokasi_pekerjaan,
+                        perusahaan=perusahaan,
+                        sumber_situs=sumber_situs,
+                        link_lowongan=link_lowongan,
+                        jenis_pekerjaan=jenis,
+                        )
+                    print(d, flush=True)
+                    # insert_to_db(d)
+                    
+                    i += 1
                     
                     await page.goBack()
                     await page.reload()
