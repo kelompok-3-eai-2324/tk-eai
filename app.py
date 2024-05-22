@@ -8,7 +8,7 @@ scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Jakarta'))
 
 @app.route('/')
 def index():
-    response = request.get('/api')
+    response = request.get('http://localhost:5000/api')
     
     if response.status_code == 200:
         data = response.json()
