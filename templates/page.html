@@ -176,57 +176,20 @@
     </div>    
       
 
-    <div class="h-24 mb-12 flex flex-col items-center justify-center">
-        
-    </div>
+    <div class="h-24 mb-12 flex flex-col items-center justify-center"></div>
+
     <h2 class="text-center text-2xl md:text-3xl text-white">List Pekerjaan</h2>
     <div id="cards-section" class="w-full max-w-6xl mx-auto py-5 flex flex-wrap gap-5 justify-center overflow-y-auto">
-        <div
-            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
-            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
+        {% for job in data %}
+        <div class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
+            <a href="{{ job.url }}" target="_blank" class="absolute top-2 right-2 text-white">
                 <i class="fa-solid fa-up-right-from-square"></i>
             </a>
-            <h2 class="text-xl font-semibold text-white">Frontend Developer</h2>
-            <p class="text-gray-300">Posted on: May 15, 2024</p>
-            <p class="text-gray-300">Location: Jakarta, Indonesia</p>
-            <p class="text-gray-300">Company: Tech Company</p>
-            <p><a href="https://karir.com" target="_blank" class="text-blue-500 hover:underline">karir.com</a></p>
-        </div>
-        <div
-            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
-            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
-                <i class="fa-solid fa-up-right-from-square"></i>
-            </a>
-            <h2 class="text-xl font-semibold text-white">Backend Developer</h2>
-            <p class="text-gray-300">Posted on: May 16, 2024</p>
-            <p class="text-gray-300">Location: Bandung, Indonesia</p>
-            <p class="text-gray-300">Company: Another Tech Company</p>
-            <p><a href="https://jobstreet.co.id" target="_blank"
-                    class="text-blue-500 hover:underline">jobstreet.co.id</a></p>
-        </div>
-        <div
-            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
-            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
-                <i class="fa-solid fa-up-right-from-square"></i>
-            </a>
-            <h2 class="text-xl font-semibold text-white">UI/UX Designer</h2>
-            <p class="text-gray-300">Posted on: May 17, 2024</p>
-            <p class="text-gray-300">Location: Surabaya, Indonesia</p>
-            <p class="text-gray-300">Company: Design Company</p>
-            <p><a href="https://kalibrr.com" target="_blank" class="text-blue-500 hover:underline">kalibrr.com</a>
-            </p>
-        </div>
-        <div
-            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
-            <a href="https://karir.com" target="_blank" class="absolute top-2 right-2 text-white">
-                <i class="fa-solid fa-up-right-from-square"></i>
-            </a>
-            <h2 class="text-xl font-semibold text-white">Data Scientist</h2>
-            <p class="text-gray-300">Posted on: May 18, 2024</p>
-            <p class="text-gray-300">Location: Yogyakarta, Indonesia</p>
-            <p class="text-gray-300">Company: Data Company</p>
-            <p><a href="https://linkedin.com" target="_blank" class="text-blue-500 hover:underline">linkedin.com</a>
-            </p>
+            <h2 class="text-xl font-semibold text-white">{{ job.title }}</h2>
+            <p class="text-gray-300">Posted on: {{ job.posted }}</p>
+            <p class="text-gray-300">Location: {{ job.location }}</p>
+            <p class="text-gray-300">Company: {{ job.company }}</p>
+            <p><a href="{{ job.source }}" target="_blank" class="text-blue-500 hover:underline">{{ job.source }}</a></p>
         </div>
     </div>
 
