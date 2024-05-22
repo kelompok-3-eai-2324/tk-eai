@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import time, os, psycopg2, pytz
 import random
-from ..utils.db import insert_to_db
+from utils.db import insert_to_db
 
 LINKEDIN_LOGIN_PAGE = 'https://linkedin.com/login'
 LINKEDIN_LOGIN_BUTTON = '.btn__primary--large.from__button--floating'

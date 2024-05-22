@@ -5,7 +5,7 @@ from pyppeteer import launch, errors
 from datetime import datetime, timedelta
 import time, os, psycopg2, pytz
 import random
-from ..utils.db import insert_to_db
+from utils.db import insert_to_db
 
 def convert_relative_time_to_date(number, unit):
     now = datetime.now(pytz.timezone('Asia/Jakarta'))

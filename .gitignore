@@ -1,5 +1,4 @@
-out.log
-log.txt
+*.log
 run.sh
 stop.sh
 
