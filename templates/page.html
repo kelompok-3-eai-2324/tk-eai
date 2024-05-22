@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Scraper</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         .background-effects::before,
         .background-effects::after {
@@ -184,29 +182,48 @@
 
     </div>
     <h2 class="text-center text-2xl md:text-3xl text-white">List Pekerjaan</h2>
-    <button id="open-modal"
-        class="mt-5 px-6 py-3 text-lg bg-blue-600 rounded hover:bg-blue-700 transition-colors">Filter Jobs</button>
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <form id="filter-form">
-                <label for="jenis_pekerjaan">Jenis Pekerjaan:</label>
-                <select name="jenis_pekerjaan" id="jenis_pekerjaan">
-                    <option value="Programmer">Programmer</option>
-                    <option value="Data">Data</option>
-                    <option value="Cyber Security">Cyber Security</option>
-                    <option value="Network">Network</option>
+    <div class="max-w-4xl mx-auto p-4 bg-gray-800 rounded-lg shadow-md my-6">
+        <form id="filter-form" action="/filter" method="GET" class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+                <label for="jenis_pekerjaan" class="block text-sm font-medium text-gray-200">Jenis Pekerjaan</label>
+                <select id="jenis_pekerjaan" name="jenis_pekerjaan"
+                    class="text-black mt-1 block w-full rounded-md border-gray-300">
+                    <option value="">Select...</option>
+                    <option value="programmer">Programmer</option>
+                    <option value="data">Data</option>
+                    <option value="cyber security">Cyber Security</option>
+                    <option value="network">Network</option>
                 </select>
-                <label for="tanggal_publikasi">Tanggal Publikasi:</label>
-                <input type="text" id="tanggal_publikasi" name="tanggal_publikasi" class="date-range">
-                <label for="lokasi">Lokasi:</label>
-                <input type="text" id="lokasi" name="lokasi">
-                <label for="perusahaan">Perusahaan Penyedia:</label>
-                <input type="text" id="perusahaan" name="perusahaan">
-                <button type="submit">Apply</button>
-            </form>
-        </div>
+            </div>
+            <div>
+                <label for="dari_tanggal" class="block text-sm font-medium text-gray-200">Dari Tanggal</label>
+                <input type="date" id="dari_tanggal" name="dari_tanggal"
+                    class="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+            <div>
+                <label for="sampai_tanggal" class="block text-sm font-medium text-gray-200">Sampai Tanggal</label>
+                <input type="date" id="sampai_tanggal" name="sampai_tanggal"
+                    class="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+            <div>
+                <label for="lokasi" class="block text-sm font-medium text-gray-200">Lokasi</label>
+                <input type="text" id="lokasi" name="lokasi"
+                    class="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+            <div>
+                <label for="perusahaan" class="block text-sm font-medium text-gray-200">Perusahaan</label>
+                <input type="text" id="perusahaan" name="perusahaan"
+                    class="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+            <div class="col-span-2 text-center">
+                <button type="submit"
+                    class="text-black mt-3 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Apply
+                    Filters</button>
+            </div>
+        </form>
+
     </div>
+
     <div id="cards-section" class="w-full max-w-6xl mx-auto py-5 flex flex-wrap gap-5 justify-center overflow-y-auto">
         {% for job in jobs %}
         <div
@@ -233,6 +250,11 @@
     </div>
 
     <script>
+        const isScroll = '{{ scroll }}';
+        if (Boolean(parseInt(isScroll))) {
+            scrollToCards();
+        }
+
         function scrollToCards() {
             document.getElementById('cards-section').scrollIntoView({ behavior: 'smooth' });
         }
@@ -247,8 +269,30 @@
             let offset = 30;
             let limit = 30;
 
+            const params = JSON.parse('{{ params | tojson }}')
+            const queryParams = new URLSearchParams({
+                offset
+            })
+
+            if (params.jenis_pekerjaan !== '') {
+                queryParams.append('jenis_pekerjaan', params.jenis_pekerjaan)
+            }
+            if (params.dari_tanggal !== '') {
+                queryParams.append('dari_tanggal', params.dari_tanggal)
+            }
+            if (params.sampai_tanggal !== '') {
+                queryParams.append('sampai_tanggal', params.sampai_tanggal)
+            }
+            if (params.lokasi !== '') {
+                queryParams.append('lokasi', params.lokasi)
+            }
+            if (params.perusahaan !== '') {
+                queryParams.append('perusahaan', params.perusahaan)
+            }
+
             document.getElementById('show-more').addEventListener('click', function () {
-                fetch(`/more_jobs?offset=${offset}`)
+                console.log(queryParams.toString())
+                fetch(`/more_jobs?${queryParams.toString()}`)
                     .then(response => response.json())
                     .then(data => {
                         const cardsSection = document.getElementById('cards-section');
@@ -278,85 +322,6 @@
                     });
             });
         });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('modal');
-            const openModalBtn = document.getElementById('open-modal');
-            const closeModalBtn = document.getElementsByClassName('close')[0];
-            const filterForm = document.getElementById('filter-form');
-
-            openModalBtn.onclick = function () {
-                modal.style.display = 'block';
-            }
-
-            closeModalBtn.onclick = function () {
-                modal.style.display = 'none';
-            }
-
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-            }
-
-            filterForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-                const formData = new FormData(filterForm);
-                const queryParams = new URLSearchParams(formData).toString();
-                fetch(`/filtered_jobs?${queryParams}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const cardsSection = document.getElementById('cards-section');
-                        cardsSection.replaceChildren();
-                        data.forEach(job => {
-                            const jobCard = document.createElement('div');
-                            jobCard.className = "card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]";
-                            jobCard.innerHTML = `
-                                <a href="${job.link_lowongan}" target="_blank" class="absolute top-2 right-2 text-white">
-                                    <i class="fa-solid fa-up-right-from-square"></i>
-                                </a>
-                                <h2 class="text-xl font-semibold text-white">${job.judul_lowongan}</h2>
-                                <p class="text-gray-300">Posted on: ${job.tanggal_publikasi}</p>
-                                <p class="text-gray-300">Location: ${job.lokasi_pekerjaan}</p>
-                                <p class="text-gray-300">Company: ${job.perusahaan}</p>
-                                <p>
-                                    <a href="https://${job.sumber_situs}" target="_blank" class="text-blue-500 hover:underline">
-                                        ${job.sumber_situs}
-                                    </a>
-                                </p>
-                            `;
-                            cardsSection.appendChild(jobCard);
-                        });
-                        offset += limit;
-                        if (data.length < limit) {
-                            document.getElementById('show-more').style.display = 'none';
-                        }
-                    });
-                modal.style.display = 'none';
-            });
-
-            flatpickr('.date-range', {
-                mode: 'range',
-                dateFormat: 'Y-m-d',
-            });
-        });
-
-        function addMoreCards() {
-            const cardsSection = document.getElementById('cards-section');
-            for (let i = 0; i < 4; i++) {
-                const card = document.createElement('div');
-                card.className = 'relative border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)] card';
-                card.innerHTML = `
-                    <h2 class="text-xl font-semibold text-white">Job Title ${i + 1}</h2>
-                    <p class="text-gray-300">Posted on: Date</p>
-                    <p class="text-gray-300">Location: City, Country</p>
-                    <p class="text-gray-300">Company: Company Name</p>
-                    <p class="text-blue-500 hover:underline"><a href="#" target="_blank">Source</a></p>
-                    <p class="text-blue-500 hover:underline"><a href="#" target="_blank">View Job</a></p>
-                `;
-                cardsSection.appendChild(card);
-            }
-        }
     </script>
 </body>
 
