@@ -4,9 +4,10 @@ import asyncio
 from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
 LINKEDIN_EMAIL=os.getenv('LINKEDIN_EMAIL')
 LINKEDIN_PASSWORD=os.getenv('LINKEDIN_PASSWORD')
-
 
 def scrape():
     # asyncio.get_event_loop().run_until_complete(kalibrr_scraper.scrape())
