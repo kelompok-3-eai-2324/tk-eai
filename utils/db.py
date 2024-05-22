@@ -114,6 +114,7 @@ def get_all_lowongan():
             return rows
         
 def get_lowongan_by(
+        offset=None,
         jenis_pekerjaan=None,
         dari_tanggal=None,
         sampai_tanggal=None,
@@ -121,10 +122,14 @@ def get_lowongan_by(
         perusahaan=None
         ):
     
-    if not any([jenis_pekerjaan, dari_tanggal, sampai_tanggal, lokasi, perusahaan]):
+    if not any([offset, jenis_pekerjaan, dari_tanggal, sampai_tanggal, lokasi, perusahaan]):
         return get_all_lowongan()
     
-    query = "SELECT * FROM lowongan_table WHERE "
+    query = "SELECT * FROM lowongan_table "
+
+    if any([jenis_pekerjaan, dari_tanggal, sampai_tanggal, lokasi, perusahaan]):
+        query += "WHERE "
+
     if jenis_pekerjaan:
         query += f"jenis_pekerjaan LIKE '%{jenis_pekerjaan}%' AND "
     if dari_tanggal:
@@ -134,9 +139,13 @@ def get_lowongan_by(
     if lokasi:
         query += f"lokasi ILIKE '%{lokasi}%' AND "
     if perusahaan:
-        query += f"perusahaan ILIKE '%{perusahaan}%'"
+        query += f"perusahaan ILIKE '%{perusahaan}%' "
 
-    query = query.rstrip(" AND")
+    query = query.rstrip("AND")
+
+    if offset:
+        query += f"LIMIT 30 OFFSET {offset}"
+
     query += ";"
 
     with psycopg2.connect(

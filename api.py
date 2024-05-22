@@ -6,6 +6,7 @@ app = Flask(__name__)
 @app.get('/api')
 def api():
     # Retrieve query parameters
+    offset = request.args.get("offset")
     jenis_pekerjaan = request.args.get('jenis_pekerjaan')
     dari_tanggal = request.args.get('dari_tanggal')
     sampai_tanggal = request.args.get('sampai_tanggal')
@@ -13,7 +14,7 @@ def api():
     perusahaan = request.args.get('perusahaan')
 
     res = []
-    for row in get_lowongan_by(jenis_pekerjaan, dari_tanggal, sampai_tanggal, lokasi, perusahaan):
+    for row in get_lowongan_by(offset, jenis_pekerjaan, dari_tanggal, sampai_tanggal, lokasi, perusahaan):
         res.append(dict(
             judul_lowongan=row[0],
             tanggal_publikasi=row[1],

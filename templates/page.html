@@ -142,7 +142,7 @@
         <div class="background-effects absolute inset-0 z-[-1]"></div>
     </div>
 
-    
+
     <div class="h-24 mb-8 mt-8 flex flex-col items-center justify-center">
         <div class="text-center mb-4">
             <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold text-white fade-in">Scrape from</h2>
@@ -150,47 +150,86 @@
         <div class="grid grid-cols-4 gap-4">
             <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
                 <div class="text-center mr-2">
-                    <img src="{{ url_for('static', filename='LinkedIn_logo.svg') }}" alt="Linkedin Logo" class="h-24 w-24 mx-auto">
+                    <img src="{{ url_for('static', filename='LinkedIn_logo.svg') }}" alt="Linkedin Logo"
+                        class="h-24 w-24 mx-auto">
                 </div>
                 <p class="text-sm text-white">LinkedIn</p>
             </div>
             <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
                 <div class="text-center mr-2">
-                    <img src="{{ url_for('static', filename='Karir_com.webp') }}" alt="Karir Logo" class="h-24 w-24 mx-auto">
+                    <img src="{{ url_for('static', filename='Karir_com.webp') }}" alt="Karir Logo"
+                        class="h-24 w-24 mx-auto">
                 </div>
                 <p class="text-sm text-white">Karir</p>
             </div>
             <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
                 <div class="text-center mr-2">
-                    <img src="{{ url_for('static', filename='logo-jobstreet-by-seek-l-min.jpg') }}" alt="JobStreet Logo" class="h-24 w-24 mx-auto">
+                    <img src="{{ url_for('static', filename='logo-jobstreet-by-seek-l-min.jpg') }}" alt="JobStreet Logo"
+                        class="h-24 w-24 mx-auto">
                 </div>
                 <p class="text-sm text-white">JobStreet</p>
             </div>
             <div class="card bg-gray-800 text-white rounded-lg p-4 transition-colors hover:shadow-xl flex items-center">
                 <div class="text-center mr-2">
-                    <img src="{{ url_for('static', filename='Kalibrr_Logo.png') }}" alt="Kalibrr Logo" class="h-24 w-24 mx-auto">
+                    <img src="{{ url_for('static', filename='Kalibrr_Logo.png') }}" alt="Kalibrr Logo"
+                        class="h-24 w-24 mx-auto">
                 </div>
                 <p class="text-sm text-white">Kalibrr</p>
             </div>
         </div>
-    </div>    
-      
+    </div>
 
-    <div class="h-24 mb-12 flex flex-col items-center justify-center"></div>
 
+    <div class="h-24 mb-12 flex flex-col items-center justify-center">
+
+    </div>
     <h2 class="text-center text-2xl md:text-3xl text-white">List Pekerjaan</h2>
+    <button id="open-modal"
+        class="mt-5 px-6 py-3 text-lg bg-blue-600 rounded hover:bg-blue-700 transition-colors">Filter Jobs</button>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="filter-form">
+                <label for="jenis_pekerjaan">Jenis Pekerjaan:</label>
+                <select name="jenis_pekerjaan" id="jenis_pekerjaan">
+                    <option value="Programmer">Programmer</option>
+                    <option value="Data">Data</option>
+                    <option value="Cyber Security">Cyber Security</option>
+                    <option value="Network">Network</option>
+                </select>
+                <label for="tanggal_publikasi">Tanggal Publikasi:</label>
+                <input type="text" id="tanggal_publikasi" name="tanggal_publikasi" class="date-range">
+                <label for="lokasi">Lokasi:</label>
+                <input type="text" id="lokasi" name="lokasi">
+                <label for="perusahaan">Perusahaan Penyedia:</label>
+                <input type="text" id="perusahaan" name="perusahaan">
+                <button type="submit">Apply</button>
+            </form>
+        </div>
+    </div>
     <div id="cards-section" class="w-full max-w-6xl mx-auto py-5 flex flex-wrap gap-5 justify-center overflow-y-auto">
-        {% for job in data %}
-        <div class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
-            <a href="{{ job.url }}" target="_blank" class="absolute top-2 right-2 text-white">
+        {% for job in jobs %}
+        <div
+            class="card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]">
+            <a href={{ job.link_lowongan }} target="_blank" class="absolute top-2 right-2 text-white">
                 <i class="fa-solid fa-up-right-from-square"></i>
             </a>
-            <h2 class="text-xl font-semibold text-white">{{ job.title }}</h2>
-            <p class="text-gray-300">Posted on: {{ job.posted }}</p>
-            <p class="text-gray-300">Location: {{ job.location }}</p>
-            <p class="text-gray-300">Company: {{ job.company }}</p>
-            <p><a href="{{ job.source }}" target="_blank" class="text-blue-500 hover:underline">{{ job.source }}</a></p>
+            <h2 class="text-xl font-semibold text-white">{{ job.judul_lowongan }}</h2>
+            <p class="text-gray-300">Posted on: {{ job.tanggal_publikasi }}</p>
+            <p class="text-gray-300">Location: {{ job.lokasi_pekerjaan }}</p>
+            <p class="text-gray-300">Company: {{ job.perusahaan }}</p>
+            <p>
+                <a href="https:/{{ job.sumber_situs }}" target="_blank" class="text-blue-500 hover:underline">
+                    {{ job.sumber_situs }}
+                </a>
+            </p>
         </div>
+        {% endfor %}
+    </div>
+    <div class="relative flex flex-col items-center justify-center pb-10">
+        <button id="show-more" class="mt-5 px-6 py-3 text-lg bg-blue-600 rounded hover:bg-blue-700 transition-colors">
+            Show More
+        </button>
     </div>
 
     <script>
@@ -202,6 +241,104 @@
             if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
                 addMoreCards();
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let offset = 30;
+            let limit = 30;
+
+            document.getElementById('show-more').addEventListener('click', function () {
+                fetch(`/more_jobs?offset=${offset}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const cardsSection = document.getElementById('cards-section');
+                        data.forEach(job => {
+                            const jobCard = document.createElement('div');
+                            jobCard.className = "card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]";
+                            jobCard.innerHTML = `
+                                <a href="${job.link_lowongan}" target="_blank" class="absolute top-2 right-2 text-white">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                                <h2 class="text-xl font-semibold text-white">${job.judul_lowongan}</h2>
+                                <p class="text-gray-300">Posted on: ${job.tanggal_publikasi}</p>
+                                <p class="text-gray-300">Location: ${job.lokasi_pekerjaan}</p>
+                                <p class="text-gray-300">Company: ${job.perusahaan}</p>
+                                <p>
+                                    <a href="https://${job.sumber_situs}" target="_blank" class="text-blue-500 hover:underline">
+                                        ${job.sumber_situs}
+                                    </a>
+                                </p>
+                            `;
+                            cardsSection.appendChild(jobCard);
+                        });
+                        offset += limit;
+                        if (data.length < limit) {
+                            document.getElementById('show-more').style.display = 'none';
+                        }
+                    });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('modal');
+            const openModalBtn = document.getElementById('open-modal');
+            const closeModalBtn = document.getElementsByClassName('close')[0];
+            const filterForm = document.getElementById('filter-form');
+
+            openModalBtn.onclick = function () {
+                modal.style.display = 'block';
+            }
+
+            closeModalBtn.onclick = function () {
+                modal.style.display = 'none';
+            }
+
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            filterForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const formData = new FormData(filterForm);
+                const queryParams = new URLSearchParams(formData).toString();
+                fetch(`/filtered_jobs?${queryParams}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const cardsSection = document.getElementById('cards-section');
+                        cardsSection.replaceChildren();
+                        data.forEach(job => {
+                            const jobCard = document.createElement('div');
+                            jobCard.className = "card border border-gray-700 rounded-lg p-5 bg-cover bg-right-bottom transition-transform transform hover:translate-y-[-5px] hover:bg-opacity-90 w-full md:w-[calc(50%-10px)]";
+                            jobCard.innerHTML = `
+                                <a href="${job.link_lowongan}" target="_blank" class="absolute top-2 right-2 text-white">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                                <h2 class="text-xl font-semibold text-white">${job.judul_lowongan}</h2>
+                                <p class="text-gray-300">Posted on: ${job.tanggal_publikasi}</p>
+                                <p class="text-gray-300">Location: ${job.lokasi_pekerjaan}</p>
+                                <p class="text-gray-300">Company: ${job.perusahaan}</p>
+                                <p>
+                                    <a href="https://${job.sumber_situs}" target="_blank" class="text-blue-500 hover:underline">
+                                        ${job.sumber_situs}
+                                    </a>
+                                </p>
+                            `;
+                            cardsSection.appendChild(jobCard);
+                        });
+                        offset += limit;
+                        if (data.length < limit) {
+                            document.getElementById('show-more').style.display = 'none';
+                        }
+                    });
+                modal.style.display = 'none';
+            });
+
+            flatpickr('.date-range', {
+                mode: 'range',
+                dateFormat: 'Y-m-d',
+            });
         });
 
         function addMoreCards() {
