@@ -31,7 +31,7 @@ async def scrape():
 
     
     browser = await launch(
-    headless=False,
+    headless=True,
     handleSIGINT=False,
     handleSIGTERM=False,
     handleSIGHUP=False,
@@ -39,7 +39,7 @@ async def scrape():
         "--no-sandbox",
         "--disable-gpu",
         "--disable-dev-shm-usage",
-        "--start-fullscreen",
+        "--start-maximized",
         "--ignore-certificate-errors",
         "--disable-infobars",
         "--disable-notifications",
@@ -88,7 +88,9 @@ async def scrape():
                 
                 for job_element in job_elements:
                     
-                    await job_element.click()
+                    await job_elements[current_index].click()
+                    
+                    current_index += 1
                     await page.waitForNavigation()
                     await random_delay(1,3)
                     
@@ -100,7 +102,9 @@ async def scrape():
                     
                     await page.goBack()
                     await page.reload()
-                    await random_delay(1,2)
+                    await random_delay(2,4)
+                    await page.waitForSelector('.jsx-4093401097.container')
+                    job_elements = await page.querySelectorAll('.jsx-4093401097.container')
                 
                 current_page += 1
                 
