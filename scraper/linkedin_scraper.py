@@ -113,8 +113,17 @@ async def scrape(linkedInEmail, linkedInPassword):
                     
                         await random_delay(5, 10)
                         
-                        date_element = await page_job.querySelectorAll('span.tvm__text.tvm__text--low-emphasis, span.tvm__text.tvm__text--positive')
-                        date_text = await page_job.evaluate('(element) => element.textContent', date_element[2])
+                        date_element = await page_job.querySelectorAll('span.tvm__text.tvm__text--low-emphasis, span.tvm__text.tvm__text--positive, span.tvm__text.tvm__text--neutral')
+                        date_text = None
+                        
+                        pattern = re.compile(r'\b(weeks?|days?|minutes?|months?|hours?)\b', re.IGNORECASE)
+                        
+                        for element in date_element:
+                            text_context = await page_job.evaluate('(element) => element.textContent', element)
+                            
+                            if pattern.search(text_context):
+                                date_text = text_context
+                        
                         date_text = date_text.lower()
                         date_text = date_text.strip()
                         
@@ -128,7 +137,8 @@ async def scrape(linkedInEmail, linkedInPassword):
                         
                         judul_lowongan_element =  await page_job.querySelector('.t-24.job-details-jobs-unified-top-card__job-title')
                         h1_element = await judul_lowongan_element.querySelector('h1.t-24.t-bold.inline')
-                        judul_lowongan = await page_job.evaluate('(element) => element.textContent', h1_element)    
+                        judul_lowongan = await page_job.evaluate('(element) => element.textContent', h1_element)
+                            
                         tanggal_publikasi = None
                         
                         if date_text.startswith('reposted'):
@@ -141,11 +151,9 @@ async def scrape(linkedInEmail, linkedInPassword):
                             numb = int(date_text[0])
                             unit = date_text[1]
                             tanggal_publikasi = convert_relative_time_to_date(numb, unit)
-                    
                         
                         location_element = await page_job.querySelectorAll('span.tvm__text')
                         lokasi_pekerjaan = await page_job.evaluate('(element) => element.textContent', location_element[0])
-                        
                         
                         perusahaan = None
                         
@@ -161,8 +169,7 @@ async def scrape(linkedInEmail, linkedInPassword):
                         sumber_situs = "linkedin.com"
 
                         link_lowongan = page_job.url
-                            
-                        
+                                      
                         d = dict(
                         no=i,
                         judul_lowongan=judul_lowongan,
